@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Enum, CheckConstraint, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Date, Time, Enum, CheckConstraint, UniqueConstraint
 from sqlalchemy.orm import validates
 from datetime import datetime
 import re
@@ -14,7 +14,8 @@ class UserModel(Base):
     id = Column('id',Integer, autoincrement=True, primary_key=True)
     username = Column('username', String, nullable=False)
     password = Column('password', String, nullable=False)
-    empresa_id = Column('empresa_id', Integer, ForeignKey("empresas.id"), nullable=False)
+    is_admin = Column('is_admin', Boolean, default=False)
+    empresa_id = Column('empresa_id', Integer, ForeignKey("empresas.id"), nullable=True)
 
     __table_args__ = (
         UniqueConstraint('empresa_id', 'username', name='uq_user_empresa'),
