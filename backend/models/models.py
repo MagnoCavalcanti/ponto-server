@@ -12,8 +12,14 @@ class UserModel(Base):
 
     __tablename__ = 'users'
     id = Column('id',Integer, autoincrement=True, primary_key=True)
-    username = Column('username', String, nullable=False, unique=True)
+    username = Column('username', String, nullable=False)
     password = Column('password', String, nullable=False)
+    empresa_id = Column('empresa_id', Integer, ForeignKey("empresas.id"), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('empresa_id', 'username', name='uq_user_empresa'),
+    )
+
 
 
 class Funcionario(Base):
