@@ -23,13 +23,14 @@ class EmpresaRepositorio:
         if empresa.cnpj == 'XX.XXX.XXX/XXXX-XX':
             empresa.cnpj = None # Não pode ser None
         empresa_model = Empresa_models(
-            nome=empresa.nome,
+            nome=empresa.nome.lower(),
             cnpj=empresa.cnpj
         )
         
         try:
             self.db.add(empresa_model)
             self.db.commit()
+            return empresa_model.id
         except IntegrityError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -58,16 +59,17 @@ class EmpresaRepositorio:
                 detail=f"Erro interno: {e}"
             )
     
-    def search_empresa(self, empresa_nome: int):
+    def get_empresa_by_name(self, empresa_nome: str) -> int:
         try:
-            empresa_db = self.db.query(Empresa_models).filter_by(nome=empresa_nome).first()
+            empresa_nome = empresa_nome.lower()
+            empresa_id = self.db.query(Empresa_models.id).filter_by(nome=empresa_nome).first()
             
-            if not empresa_db:
+            if not empresa_id:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Empresa não encontrada!"
                 )
-            return empresa_db
+            return empresa_id[0]
         except Exception as e:
             self.db.rollback()
             raise HTTPException(

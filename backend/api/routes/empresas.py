@@ -29,15 +29,6 @@ def verificar_id_empresa(empresa: str, db: Session = Depends(get_db_session)):
     id_empresa = verificar_empresa(empresa, db)
     return {"id_empresa": id_empresa, "empresa": empresa, "msg": "sucess"}
 
-@empresa_router.post("/cadastrar")
-def cadastro_empresas(empresa: Empresa, db: Session = Depends(get_db_session)):
-    empresa_repo = EmpresaRepositorio(db_session=db)
-    empresa_repo.register_empresa(empresa=empresa)
-
-    return JSONResponse(
-        content={'msg': 'success'},
-        status_code=status.HTTP_201_CREATED
-    )
 
 @empresa_router.put("/atualizar/{id}")
 def atualizar_empresa(id:int, empresa: Empresa, db: Session = Depends(get_db_session)):
