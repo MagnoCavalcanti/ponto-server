@@ -17,8 +17,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://127.0.0.1:8000/login")  # 
 
 def verificar_empresa(empresa: str, db: Session = Depends(get_db_session)):
     empresa_repo = EmpresaRepositorio(db)
-    empresa = empresa_repo.get_empresa_by_name(empresa_nome=empresa)
-    return empresa.id
+    empresa_id = empresa_repo.get_empresa_by_name(empresa_nome=empresa)
+    return empresa_id
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db_session)):
     credentials_exception = HTTPException(

@@ -27,7 +27,7 @@ def listar_empresas(db: Session = Depends(get_db_session)):
 @empresa_router.get("/{empresa}")
 def verificar_id_empresa(empresa: str, db: Session = Depends(get_db_session)):
     id_empresa = verificar_empresa(empresa, db)
-    return {"id_empresa": id_empresa, "empresa": empresa, "msg": "sucess"}
+    return {"id_empresa": id_empresa, "msg": "sucess"}
 
 
 @empresa_router.put("/atualizar/{id}")

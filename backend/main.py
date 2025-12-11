@@ -22,7 +22,7 @@ def home():
 
 app.include_router(auth_router, tags=["Autenticação"])
 app.include_router(funcio_router, dependencies=[Depends(get_current_user)], tags=["Funcionário"])
-app.include_router(empresa_router, dependencies=[Depends(get_current_user)], tags=["Empresa"])
+app.include_router(empresa_router, tags=["Empresa"])
 app.include_router(ponto_router, dependencies=[Depends(get_current_user)], tags=["Ponto"])
 app.include_router(pdf_router, dependencies=[Depends(get_current_user)], tags=["PDF"])
 app.include_router(relogios_router, dependencies=[Depends(get_current_user)], tags=["Relógios"])

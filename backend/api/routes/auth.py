@@ -35,7 +35,7 @@ def LoginUsuario(
     request_form_user: OAuth2PasswordRequestForm = Depends(), 
     db: Session = Depends(get_db_session)
     ):
-    empresa_id = verificar_empresa(empresa)
+    empresa_id = verificar_empresa(empresa, db)
     login = UserUseCases(dbsession=db)
     user = User(
         username=request_form_user.username,
@@ -67,6 +67,16 @@ def LoginSuperuser(
         status_code=status.HTTP_200_OK
     )
 
+@auth_router.get("/verify-token")
+def verify_token(current_user: dict = Depends(get_current_user)):
+    try:
+        return {"message": "Token is valid", "user": current_user}
+    except Exception as e:
+        return JSONResponse(
+            content={"error": "Invalid token"},
+            status_code=status.HTTP_401_UNAUTHORIZED
+        )
+    
 @auth_router.get("/protected-route")
 def protected_route(current_user: dict = Depends(get_current_user)):
     return {"message": "You are authenticated", "user": current_user}
