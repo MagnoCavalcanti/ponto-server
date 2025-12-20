@@ -5,7 +5,7 @@ services:
     image: postgres:16
     container_name: database
     volumes:
-      - C:/containers/database/pontoeletronico/postgres:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     env_file:
       - ./.env
     ports:
@@ -17,13 +17,18 @@ services:
       dockerfile: Dockerfile.backend
     container_name: backend
     volumes:
-      - C:/containers/backend/pontoeletronico/python:/app/data/python
+      - backend_data:/app/data/python
     env_file:
       - ./.env
     ports:
       - 8000:8000
     depends_on:
       - db
+
+volumes:
+  db_data:
+  backend_data:
+
   
 
     
