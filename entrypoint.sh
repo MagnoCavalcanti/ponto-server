@@ -8,6 +8,10 @@ sleep 5
 echo "Aplicando migrações..."
 alembic upgrade head
 
+# Cria o superuser
+echo "Criando superuser..."
+python -m backend.database.seed_data
+
 # Inicia a aplicação
 echo "Iniciando o servidor..."
 uvicorn backend.main:app --host=0.0.0.0 --port=8000

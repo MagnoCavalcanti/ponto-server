@@ -75,13 +75,13 @@ class UserUseCases:
     def login_superuser(self, user: User, expira_em: int = 30):
         user_db = self.dbsession.query(UserModel).filter_by(username=user.username, is_admin=True).first()
 
-        print(user_db.empresa_id)
-
         if user_db is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail='Login inválido!'
             )
+        
+        print(user_db.empresa_id)
         
         if not crypt_context.verify(user.password, user_db.password):
             raise HTTPException(
