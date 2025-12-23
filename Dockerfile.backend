@@ -16,5 +16,14 @@ COPY ./backend ./backend
 # Copia o arquivo com as variaveis de ambiente
 COPY .env ./
 
-# Define o comando padrão para executar a aplicação com uvicorn
-CMD ["uvicorn", "backend.main:app", "--host=0.0.0.0", "--port=8000"]
+# Copia o arquivo alembic.ini
+COPY alembic.ini ./
+
+# Copia o script de entrypoint
+COPY entrypoint.sh ./
+
+# Torna o script executável
+RUN chmod +x entrypoint.sh
+
+# Define o comando padrão para executar o script de entrypoint
+CMD ["./entrypoint.sh"]
