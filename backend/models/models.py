@@ -29,7 +29,6 @@ class Funcionario(Base):
     id = Column(Integer, autoincrement=True, primary_key=True)
     nome= Column(String, nullable=False)
     matricula= Column(Integer, nullable=False, unique=True)
-    pis= Column(Integer, nullable=False, unique=True)
     empresa_id = Column(Integer, ForeignKey("empresas.id"))
     funcao= Column(String)
     grupo= Column(String)
