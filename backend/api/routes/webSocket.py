@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, HTTPException
 from datetime import datetime
 from pydantic import ValidationError
 
@@ -39,6 +39,9 @@ async def websocket_endpoint(websocket: WebSocket, empresa: str):
 
                               except KeyError as e:
                                    await manager.send_exception(websocket, f"o campo {str(e)} é obrigatório!")
+
+                              except HTTPException as e:
+                                   await manager.send_exception(websocket, e.detail)
                               
                          case 'employee_sync':
                               payload_response = data['payload']
