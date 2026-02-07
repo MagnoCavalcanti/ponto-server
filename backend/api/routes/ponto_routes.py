@@ -62,3 +62,120 @@ async def requisitar_registros(
         "status_code":status.HTTP_200_OK,
         "detail": "requisição enviada ao REP!"
     }
+
+@ponto_router.get("/funcionario/{cpf}")
+def get_registros_funcionario(
+    empresa: str,
+    cpf: str,
+    db: Session = Depends(get_db_session)
+):
+    """
+    Retorna todos os registros de ponto de um funcionário específico.
+    """
+    ponto_repo = PontoRepo(dbsession=db)
+    registros = ponto_repo.get_registros_por_funcionario(cpf)
+
+    
+    if not registros:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Nenhum registro encontrado para este funcionário"
+        )
+    
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "total": len(registros),
+            "registros": registros
+        }
+    )
+
+@ponto_router.get("/data/{data}")
+def get_registros_data(
+    empresa: str,
+    data: str,
+    db: Session = Depends(get_db_session)
+):
+    """
+    Retorna todos os registros de ponto de uma data específica.
+    Data deve estar no formato YYYY-MM-DD.
+    """
+    ponto_repo = PontoRepo(dbsession=db)
+    registros = ponto_repo.get_registros_por_data(data)
+    
+    if not registros:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Nenhum registro encontrado para esta data"
+        )
+    
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "data": data,
+            "total": len(registros),
+            "registros": registros
+        }
+    )
+
+@ponto_router.get("/periodo")
+def get_registros_periodo(
+    empresa: str,
+    data_inicio: str,
+    data_fim: str,
+    db: Session = Depends(get_db_session)
+):
+    """
+    Retorna todos os registros de ponto em um período.
+    Datas devem estar no formato YYYY-MM-DD.
+    """
+    ponto_repo = PontoRepo(dbsession=db)
+    registros = ponto_repo.get_registros_por_periodo(data_inicio, data_fim)
+    
+    if not registros:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Nenhum registro encontrado para este período"
+        )
+    
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "data_inicio": data_inicio,
+            "data_fim": data_fim,
+            "total": len(registros),
+            "registros": registros
+        }
+    )
+
+@ponto_router.get("/funcionario/{cpf}/periodo")
+def get_registros_funcionario_periodo(
+    empresa: str,
+    cpf: str,
+    data_inicio: str,
+    data_fim: str,
+    db: Session = Depends(get_db_session)
+):
+    """
+    Retorna todos os registros de ponto de um funcionário em um período específico.
+    Datas devem estar no formato YYYY-MM-DD.
+    """
+    ponto_repo = PontoRepo(dbsession=db)
+    registros = ponto_repo.get_registros_por_funcionario_periodo(cpf, data_inicio, data_fim)
+    
+    if not registros:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Nenhum registro encontrado para este funcionário no período especificado"
+        )
+    
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "cpf_funcionario": cpf,
+            "data_inicio": data_inicio,
+            "data_fim": data_fim,
+            "total": len(registros),
+            "registros": registros
+        }
+    )

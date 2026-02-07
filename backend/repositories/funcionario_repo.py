@@ -72,7 +72,26 @@ class FuncionarioRepo:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Erro interno: {e}"
             )
-        
+
+    def get_funcionario_by_cpf(self, cpf: str, empresa_id: int):
+        try:
+            funcionario_db = (
+                self.db.query(Funcionario_models)
+                .filter(Funcionario_models.cpf == cpf, Funcionario_models.empresa_id == empresa_id)
+                .first()
+            )
+            if not funcionario_db:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Funcionário não encontrado!"
+                )
+            return funcionario_db
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro no servidor!"
+            )
+
     def bulk_insert_funcionario(self, list_funcionarios: list[dict], empresa_id: int):
         funcionarios_db = []
         for funcionario in list_funcionarios:

@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import status, HTTPException
 from pydantic import ValidationError
 from datetime import datetime
+from typing import List
 
 
 import os
@@ -13,6 +14,7 @@ sys.path.insert(0, absolut_path)
 
 from backend.schemas import RegistroPonto
 from backend.models import RegistroPonto as Registro_models
+from .funcionario_repo import FuncionarioRepo
 
 class PontoRepo:
 
@@ -109,3 +111,145 @@ class PontoRepo:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
             )
+    
+    def get_registros_por_funcionario(self, cpf: str) -> List[Registro_models]:
+        """
+        Retorna todos os registros de ponto de um funcionário específico.
+        
+        Args:
+            cpf: CPF do funcionário
+            
+        Returns:
+            Lista de registros do funcionário
+        """
+        cpf_formatado = cpf.zfill(11) if len(cpf) < 11 else cpf
+        
+        registros = self.db.query(Registro_models).filter(
+            Registro_models.cpf_funcionario == cpf_formatado
+        ).order_by(Registro_models.data.desc(), Registro_models.hora.desc()).all()
+
+        registros_formatados = []
+
+        for r in registros:
+            funcionario = FuncionarioRepo(self.db).get_funcionario_by_cpf(r.cpf_funcionario, r.empresa_id)
+            funcionario = funcionario.nome if funcionario else "Funcionário não encontrado"
+
+            registros_formatados.append({
+                    "nsr": r.nsr,
+                    "cpf_funcionario": r.cpf_funcionario,
+                    "funcionario": funcionario,
+                    "empresa_id": r.empresa_id,
+                    "relogio_id": r.relogio_id,
+                    "data": str(r.data),
+                    "hora": str(r.hora),
+                    "tipo": r.tipo
+            })
+        
+        return registros_formatados
+
+    def get_registros_por_data(self, data: str) -> List[Registro_models]:
+        """
+        Retorna todos os registros de ponto de uma data específica.
+        
+        Args:
+            data: Data no formato YYYY-MM-DD
+            
+        Returns:
+            Lista de registros da data
+        """
+        registros = self.db.query(Registro_models).filter(
+            Registro_models.data == data
+        ).order_by(Registro_models.hora).all()
+
+        registros_formatados = []
+
+        for r in registros:
+            funcionario = FuncionarioRepo(self.db).get_funcionario_by_cpf(r.cpf_funcionario, r.empresa_id)
+            funcionario = funcionario.nome if funcionario else "Funcionário não encontrado"
+
+            registros_formatados.append({
+                    "nsr": r.nsr,
+                    "cpf_funcionario": r.cpf_funcionario,
+                    "funcionario": funcionario,
+                    "empresa_id": r.empresa_id,
+                    "relogio_id": r.relogio_id,
+                    "data": str(r.data),
+                    "hora": str(r.hora),
+                    "tipo": r.tipo
+            })
+        
+        return registros_formatados
+
+    def get_registros_por_periodo(self, data_inicio: str, data_fim: str) -> List[Registro_models]:
+        """
+        Retorna todos os registros de ponto em um período.
+        
+        Args:
+            data_inicio: Data inicial no formato YYYY-MM-DD
+            data_fim: Data final no formato YYYY-MM-DD
+            
+        Returns:
+            Lista de registros no período
+        """
+        registros = self.db.query(Registro_models).filter(
+            Registro_models.data >= data_inicio,
+            Registro_models.data <= data_fim
+        ).order_by(Registro_models.data.desc(), Registro_models.hora.desc()).all()
+
+        registros_formatados = []
+
+        for r in registros:
+            funcionario = FuncionarioRepo(self.db).get_funcionario_by_cpf(r.cpf_funcionario, r.empresa_id)
+            funcionario = funcionario.nome if funcionario else "Funcionário não encontrado"
+
+            registros_formatados.append({
+                    "nsr": r.nsr,
+                    "cpf_funcionario": r.cpf_funcionario,
+                    "funcionario": funcionario,
+                    "empresa_id": r.empresa_id,
+                    "relogio_id": r.relogio_id,
+                    "data": str(r.data),
+                    "hora": str(r.hora),
+                    "tipo": r.tipo
+            })
+        
+        return registros_formatados
+
+    def get_registros_por_funcionario_periodo(self, cpf: str, data_inicio: str, data_fim: str) -> List[Registro_models]:
+        """
+        Retorna todos os registros de ponto de um funcionário em um período específico.
+        
+        Args:
+            cpf: CPF do funcionário
+            data_inicio: Data inicial no formato YYYY-MM-DD
+            data_fim: Data final no formato YYYY-MM-DD
+            
+        Returns:
+            Lista de registros do funcionário no período
+        """
+        cpf_formatado = cpf.zfill(11) if len(cpf) < 11 else cpf
+        
+        registros = self.db.query(Registro_models).filter(
+            Registro_models.cpf_funcionario == cpf_formatado,
+            Registro_models.data >= data_inicio,
+            Registro_models.data <= data_fim
+        ).order_by(Registro_models.data.desc(), Registro_models.hora.desc()).all()
+
+        registros_formatados = []
+
+        for r in registros:
+            funcionario = FuncionarioRepo(self.db).get_funcionario_by_cpf(r.cpf_funcionario, r.empresa_id)
+            funcionario = funcionario.nome if funcionario else "Funcionário não encontrado"
+
+            registros_formatados.append({
+                    "nsr": r.nsr,
+                    "cpf_funcionario": r.cpf_funcionario,
+                    "funcionario": funcionario,
+                    "empresa_id": r.empresa_id,
+                    "relogio_id": r.relogio_id,
+                    "data": str(r.data),
+                    "hora": str(r.hora),
+                    "tipo": r.tipo
+            })
+        
+        return registros_formatados 
