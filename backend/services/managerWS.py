@@ -22,8 +22,10 @@ class ConnectionManager:
             )
     
     def disconnection(self, websocket: WebSocket) -> None:
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
+        for empresa, ws in list(self.active_connections.items()):
+            if ws is websocket:
+                del self.active_connections[empresa]
+                break
 
     async def send_personal_message(self, message: str, empresa: str, websocket: WebSocket) -> None:
         messageJson = {
